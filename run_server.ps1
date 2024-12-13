@@ -28,8 +28,6 @@ function Copy-Resources {
     }
 }
 
-# Копируем папку Resources при запуске
-Copy-Resources
 
 # Перезапускаем приложение
 Write-Host "Запускаю приложение..." -ForegroundColor Yellow
