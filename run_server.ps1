@@ -1,6 +1,8 @@
 # Определяем путь к приложению и имя процесса
 $AppPath = "$(Get-Location)\Content.Server\Content.Server.exe"
 $ProcessName = "Content.Server"
+$ResourcesFolder = "$(Get-Location)\Resources"
+$ParentFolder = "$(Get-Location)\..\Resources"
 
 # Функция для проверки наличия обновлений
 function Check-GitUpdates {
@@ -14,6 +16,20 @@ function Check-GitUpdates {
         return $false
     }
 }
+
+# Функция для копирования папки Resources
+function Copy-Resources {
+    if (Test-Path $ResourcesFolder) {
+        Write-Host "Копирую папку Resources в родительскую директорию..." -ForegroundColor Yellow
+        Copy-Item -Path $ResourcesFolder -Destination $ParentFolder -Recurse -Force
+        Write-Host "Папка Resources скопирована." -ForegroundColor Green
+    } else {
+        Write-Host "Папка Resources не найдена." -ForegroundColor Gray
+    }
+}
+
+# Копируем папку Resources при запуске
+Copy-Resources
 
 # Перезапускаем приложение
 Write-Host "Запускаю приложение..." -ForegroundColor Yellow
@@ -39,6 +55,9 @@ while ($true) {
         Write-Host "Получаю обновления из GIT..." -ForegroundColor Yellow
         & git.exe pull
 
+        # Копируем папку Resources при обновлении
+        Copy-Resources
+
         # Перезапускаем приложение
         Write-Host "Перезапускаю приложение..." -ForegroundColor Yellow
         Start-Process -FilePath $AppPath
@@ -47,6 +66,6 @@ while ($true) {
         Write-Host "Обновлений не найдено." -ForegroundColor Gray
     }
 
-    # Ждем 1 минуту
+    # Ждем 30 секунд
     Start-Sleep -Seconds 30
 }
